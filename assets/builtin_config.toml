@@ -1,0 +1,16 @@
+[default]
+# --- Move cursor ---
+"C-f" = "forward-char"
+"C-b" = "backward-char"
+"C-n" = "next-line"
+"C-p" = "previous-line"
+
+"C-a" = "beginning-of-line"
+"C-e" = "end-of-line"
+
+"M-f" = "forward-word"
+"M-b" = "backward-word"
+
+# --- Special ---
+"C-Space" = "set-mark"
+"C-g" = "keyboard-quit"
