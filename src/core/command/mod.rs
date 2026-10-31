@@ -17,6 +17,9 @@ pub(crate) enum Command {
     BeginningOfLine,
     EndOfLine,
 
+    BeginningOfBuffer,
+    EndOfBuffer,
+
     ForwardWord,
     BackwardWord,
 
@@ -30,19 +33,22 @@ impl fmt::Display for Command {
         use Command::*;
 
         match self {
-            ForwardChar     => write!(f, "command::ForwardChar"),
-            BackwardChar    => write!(f, "command::BackwardChar"),
-            NextLine        => write!(f, "command::NextLine"),
-            PreviousLine    => write!(f, "command::PreviousLine"),
+            ForwardChar         => write!(f, "command::ForwardChar"),
+            BackwardChar        => write!(f, "command::BackwardChar"),
+            NextLine            => write!(f, "command::NextLine"),
+            PreviousLine        => write!(f, "command::PreviousLine"),
 
-            BeginningOfLine => write!(f, "command::BeginningOfLine"),
-            EndOfLine       => write!(f, "command::EndOfLine"),
+            BeginningOfLine     => write!(f, "command::BeginningOfLine"),
+            EndOfLine           => write!(f, "command::EndOfLine"),
 
-            ForwardWord     => write!(f, "command::ForwardWord"),
-            BackwardWord    => write!(f, "command::BackwardWord"),
+            BeginningOfBuffer   => write!(f, "command::BeginningOfBuffer"),
+            EndOfBuffer         => write!(f, "command::EndOfBuffer"),
 
-            SetMark         => write!(f, "command::SetMark"),
-            KeyboardQuit    => write!(f, "command::KeyboardQuit"),
+            ForwardWord         => write!(f, "command::ForwardWord"),
+            BackwardWord        => write!(f, "command::BackwardWord"),
+
+            SetMark             => write!(f, "command::SetMark"),
+            KeyboardQuit        => write!(f, "command::KeyboardQuit"),
         }
     }
 
@@ -55,21 +61,24 @@ impl str::FromStr for Command {
         use Command::*;
 
         Ok(match s {
-            "forward-char"      => ForwardChar,
-            "backward-char"     => BackwardChar,
-            "next-line"         => NextLine,
-            "previous-line"     => PreviousLine,
+            "forward-char"          => ForwardChar,
+            "backward-char"         => BackwardChar,
+            "next-line"             => NextLine,
+            "previous-line"         => PreviousLine,
 
-            "beginning-of-line" => BeginningOfLine,
-            "end-of-line"       => EndOfLine,
+            "beginning-of-line"     => BeginningOfLine,
+            "end-of-line"           => EndOfLine,
 
-            "forward-word"      => ForwardWord,
-            "backward-word"     => BackwardWord,
+            "beginning-of-buffer"   => BeginningOfBuffer,
+            "end-of-buffer"         => EndOfBuffer,
 
-            "set-mark"          => SetMark,
-            "keyboard-quit"     => KeyboardQuit,
+            "forward-word"          => ForwardWord,
+            "backward-word"         => BackwardWord,
 
-            _                   => return Err("Unknown command".to_string()),
+            "set-mark"              => SetMark,
+            "keyboard-quit"         => KeyboardQuit,
+
+            _                       => return Err(format!("Unknown command: '{}'", s)),
         })
     }
 

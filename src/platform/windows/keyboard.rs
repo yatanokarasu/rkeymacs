@@ -1,13 +1,34 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::{
-    VIRTUAL_KEY, VK_0, VK_9, VK_A, VK_CONTROL, VK_DOWN, VK_END, VK_HOME, VK_LEFT, VK_LWIN, VK_MENU, VK_RIGHT, VK_SHIFT, VK_SPACE, VK_UP, VK_Z
+    VIRTUAL_KEY,
+    VK_0, VK_9,
+    VK_A, VK_Z,
+    VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
+    VK_END, VK_HOME, VK_SPACE,
+    VK_CONTROL, VK_LWIN, VK_MENU, VK_SHIFT,
+    VK_OEM_COMMA, VK_OEM_PERIOD,
 };
 
 use crate::core::key::{Key, Modifier};
 
 
+pub struct JisLayout;
+pub struct UsLayout;
+
+
 pub(in crate::platform::windows) trait VirtualKeyMapper {
 
-    fn oem_char(&self, vk: u16) -> Option<char>;
+    fn specific_oem_char(&self, vk: u16) -> Option<char>;
+
+
+    fn oem_char(&self, vk: u16) -> Option<char> {
+        Some(match vk {
+            _ if vk == VK_OEM_COMMA.0   => ',',
+            _ if vk == VK_OEM_PERIOD.0  => '.',
+
+            others => self.specific_oem_char(others)?,
+        })
+    }
+
 
     fn key_from_vk(&self, vk: u32) -> Option<Key> {
         let vk = u16::try_from(vk).ok()?;
@@ -29,36 +50,54 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
         (VK_A.0..=VK_Z.0).contains(&vk)
     }
 
+
     fn is_number(&self, vk: u16) -> bool {
         (VK_0.0..=VK_9.0).contains(&vk)
     }
+
 
     fn parse_named_key(&self, vk: u16) -> Option<Key> {
         Some(match vk {
             _ if vk == VK_HOME.0    => Key::Home,
             _ if vk == VK_END.0     => Key::End,
             _ if vk == VK_SPACE.0   => Key::Space,
+
             _ => return None,
         })
     }
 
 }
 
+impl VirtualKeyMapper for JisLayout {
+
+    fn specific_oem_char(&self, _vk: u16) -> Option<char> {
+        None
+    }
+
+}
+
+impl VirtualKeyMapper for UsLayout {
+
+    fn specific_oem_char(&self, _vk: u16) -> Option<char> {
+        None
+    }
+
+}
+
 
 pub(in crate::platform::windows) enum Keyboard {
-    Jis,
-    Us,
+    Jis(JisLayout),
+    Us(UsLayout),
 }
 
 impl Keyboard {
 
     pub fn new() -> Self {
-        use windows::Win32::Foundation::HWND;
         use windows::Win32::UI::Input::KeyboardAndMouse::GetKeyboardLayout;
         use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowThreadProcessId};
 
         let keyboard_handle = unsafe {
-            let window_handle: HWND = GetForegroundWindow();
+            let window_handle = GetForegroundWindow();
             let thread_id = GetWindowThreadProcessId(window_handle, None);
 
             GetKeyboardLayout(thread_id)
@@ -67,24 +106,21 @@ impl Keyboard {
         let lang_id = (keyboard_handle.0 as usize & 0xFFFF) as u16;
 
         if lang_id == 0x_0411 {
-            Keyboard::Jis
+            Keyboard::Jis(JisLayout)
         } else {
-            Keyboard::Us
+            Keyboard::Us(UsLayout)
+        }
+    }
+
+
+    pub fn key_from_vk(&self, vk: u32) -> Option<Key> {
+        match self {
+            Keyboard::Jis(layout)   => layout.key_from_vk(vk),
+            Keyboard::Us(layout)    => layout.key_from_vk(vk),
         }
     }
 
 }
-
-impl VirtualKeyMapper for Keyboard {
-
-    fn oem_char(&self, _vk: u16) -> Option<char> {
-        None
-    }
-}
-
-
-// struct UsKeyboard;
-// struct JisKeyboard;
 
 
 pub trait VirtualKeyConvertable {
@@ -118,6 +154,7 @@ impl VirtualKeyConvertable for Modifier {
             Modifier::SHIFT => VK_SHIFT,
             Modifier::ALT   => VK_MENU,
             Modifier::WIN   => VK_LWIN,
+
             _               => return None,
         })
     }

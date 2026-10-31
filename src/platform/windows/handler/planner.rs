@@ -1,4 +1,3 @@
-
 use std::cell::Cell;
 
 use crate::core::command::Intent;
@@ -60,19 +59,22 @@ impl Planner for WindowsPlanner {
         let Intent{ command, chord } = intent;
 
         let plan = match command {
-            ForwardChar     => self.move_cursor(Key::Right),
-            BackwardChar    => self.move_cursor(Key::Left),
-            NextLine        => self.move_cursor(Key::Down),
-            PreviousLine    => self.move_cursor(Key::Up),
+            ForwardChar         => self.move_cursor(Key::Right),
+            BackwardChar        => self.move_cursor(Key::Left),
+            NextLine            => self.move_cursor(Key::Down),
+            PreviousLine        => self.move_cursor(Key::Up),
 
-            BeginningOfLine => self.move_cursor(Key::Home),
-            EndOfLine       => self.move_cursor(Key::End),
+            BeginningOfLine     => self.move_cursor(Key::Home),
+            EndOfLine           => self.move_cursor(Key::End),
 
-            ForwardWord     => self.forward_word(),
-            BackwardWord    => self.backward_word(),
+            BeginningOfBuffer   => self.begining_of_buffer(),
+            EndOfBuffer         => self.end_of_buffer(),
 
-            SetMark         => self.mark_state_to(true),
-            KeyboardQuit    => self.mark_state_to(false),
+            ForwardWord         => self.forward_word(),
+            BackwardWord        => self.backward_word(),
+
+            SetMark             => self.mark_state_to(true),
+            KeyboardQuit        => self.mark_state_to(false),
         };
 
         plan.shield(chord.mods)
@@ -102,6 +104,24 @@ impl WindowsPlanner {
     fn backward_word(&self) -> Plan {
         PlanBuilder::new()
             .press(Key::Left)
+            .with(Modifier::CTRL)
+            .shifted_if(self.state.is_activated())
+            .build()
+    }
+
+
+    fn begining_of_buffer(&self) -> Plan {
+        PlanBuilder::new()
+            .press(Key::Home)
+            .with(Modifier::CTRL)
+            .shifted_if(self.state.is_activated())
+            .build()
+    }
+
+
+    fn end_of_buffer(&self) -> Plan {
+        PlanBuilder::new()
+            .press(Key::End)
             .with(Modifier::CTRL)
             .shifted_if(self.state.is_activated())
             .build()

@@ -14,7 +14,7 @@ use crate::Runtime;
 use crate::core::Disposition;
 use crate::core::key::{Event, Modifier};
 use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
-use crate::platform::windows::keyboard::{Keyboard, VirtualKeyMapper};
+use crate::platform::windows::keyboard::Keyboard;
 
 
 pub struct WindowsKeyCodeShim<L> {
