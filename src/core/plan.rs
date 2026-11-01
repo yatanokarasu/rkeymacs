@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::core::{key::{Chord, Key, Modifier}, plan::Plan::{ToExecute, ToSwallow}};
+use crate::core::key::{Chord, Modifier};
 
 
 pub struct PlanBuilder {
@@ -16,8 +16,8 @@ impl PlanBuilder {
     }
 
 
-    pub fn press(mut self, key: Key) -> Self {
-        self.actions.push(Action::Press(Chord::from(key)));
+    pub fn press<C: Into<Chord>>(mut self, chordable: C) -> Self {
+        self.actions.push(Action::Press(chordable.into()));
 
         self
     }
@@ -77,6 +77,8 @@ impl Plan {
 impl fmt::Display for Plan {
 
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use Plan::*;
+
         match self {
             ToExecute(actions) => {
                 write!(f, "Plan: {:?}", actions.iter().map(|e| e.to_string()).collect::<Vec<_>>().join(", "))?;

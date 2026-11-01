@@ -2,7 +2,7 @@ use std::cell::Cell;
 
 use crate::core::command::Intent;
 use crate::core::command::handler::Planner;
-use crate::core::key::{Key, Modifier};
+use crate::core::key::{Chord, Key, Modifier};
 use crate::core::plan::{Plan, PlanBuilder};
 
 
@@ -67,14 +67,14 @@ impl Planner for WindowsPlanner {
             BeginningOfLine     => self.move_cursor(Key::Home),
             EndOfLine           => self.move_cursor(Key::End),
 
-            BeginningOfBuffer   => self.begining_of_buffer(),
-            EndOfBuffer         => self.end_of_buffer(),
+            BeginningOfBuffer   => self.move_cursor(Chord::new(Key::Home, Modifier::CTRL)),
+            EndOfBuffer         => self.move_cursor(Chord::new(Key::End, Modifier::CTRL)),
 
-            ForwardWord         => self.forward_word(),
-            BackwardWord        => self.backward_word(),
+            ForwardWord         => self.move_cursor(Chord::new(Key::Right, Modifier::CTRL)),
+            BackwardWord        => self.move_cursor(Chord::new(Key::Left, Modifier::CTRL)),
 
-            ScrollDown          => self.scroll_down(),
-            ScrollUp            => self.scroll_up(),
+            ScrollDown          => self.move_cursor(Key::PageDown),
+            ScrollUp            => self.move_cursor(Key::PageUp),
 
             SetMark             => self.mark_state_to(true),
             KeyboardQuit        => self.mark_state_to(false),
@@ -87,61 +87,12 @@ impl Planner for WindowsPlanner {
 
 impl WindowsPlanner {
 
-    fn move_cursor(&self, key: Key) -> Plan {
+    fn move_cursor<C: Into<Chord>>(&self, chordable: C) -> Plan
+    where
+        C: Into<C>
+    {
         PlanBuilder::new()
-            .press(key)
-            .shifted_if(self.state.is_activated())
-            .build()
-    }
-
-
-    fn forward_word(&self) -> Plan {
-        PlanBuilder::new()
-            .press(Key::Right)
-            .with(Modifier::CTRL)
-            .shifted_if(self.state.is_activated())
-            .build()
-    }
-
-
-    fn backward_word(&self) -> Plan {
-        PlanBuilder::new()
-            .press(Key::Left)
-            .with(Modifier::CTRL)
-            .shifted_if(self.state.is_activated())
-            .build()
-    }
-
-
-    fn begining_of_buffer(&self) -> Plan {
-        PlanBuilder::new()
-            .press(Key::Home)
-            .with(Modifier::CTRL)
-            .shifted_if(self.state.is_activated())
-            .build()
-    }
-
-
-    fn end_of_buffer(&self) -> Plan {
-        PlanBuilder::new()
-            .press(Key::End)
-            .with(Modifier::CTRL)
-            .shifted_if(self.state.is_activated())
-            .build()
-    }
-
-
-    fn scroll_down(&self) -> Plan {
-        PlanBuilder::new()
-            .press(Key::PageDown)
-            .shifted_if(self.state.is_activated())
-            .build()
-    }
-
-
-    fn scroll_up(&self) -> Plan {
-        PlanBuilder::new()
-            .press(Key::PageUp)
+            .press(chordable)
             .shifted_if(self.state.is_activated())
             .build()
     }
