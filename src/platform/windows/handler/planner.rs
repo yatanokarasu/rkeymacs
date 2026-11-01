@@ -76,8 +76,10 @@ impl Planner for WindowsPlanner {
             ScrollDown          => self.move_cursor(Key::PageDown),
             ScrollUp            => self.move_cursor(Key::PageUp),
 
-            SetMark             => self.mark_state_to(true),
             KeyboardQuit        => self.mark_state_to(false),
+            Undo                => self.undo(),
+
+            SetMark             => self.mark_state_to(true),
         };
 
         plan.shield(chord.mods)
@@ -94,6 +96,13 @@ impl WindowsPlanner {
         PlanBuilder::new()
             .press(chordable)
             .shifted_if(self.state.is_activated())
+            .build()
+    }
+
+
+    fn undo(&self) -> Plan {
+        PlanBuilder::new()
+            .press(Chord::new(Key::Char('z'), Modifier::CTRL))
             .build()
     }
 

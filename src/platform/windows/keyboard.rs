@@ -5,7 +5,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
     VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
     VK_CONTROL, VK_LWIN, VK_MENU, VK_SHIFT,
-    VK_OEM_COMMA, VK_OEM_PERIOD,
+    VK_OEM_2, VK_OEM_COMMA, VK_OEM_PERIOD,
 };
 
 use crate::core::key::{Key, Modifier};
@@ -24,6 +24,7 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
         Some(match vk {
             _ if vk == VK_OEM_COMMA.0   => ',',
             _ if vk == VK_OEM_PERIOD.0  => '.',
+            _ if vk == VK_OEM_2.0       => '/',
 
             others => self.specific_oem_char(others)?,
         })

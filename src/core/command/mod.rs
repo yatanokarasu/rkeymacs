@@ -27,9 +27,12 @@ pub(crate) enum Command {
     ScrollDown,
     ScrollUp,
 
+    // Error recovery commands
+    KeyboardQuit,
+    Undo,
+
     // Other commands
     SetMark,
-    KeyboardQuit,
 }
 
 impl fmt::Display for Command {
@@ -55,8 +58,10 @@ impl fmt::Display for Command {
             ScrollDown          => write!(f, "command::ScrollDown"),
             ScrollUp            => write!(f, "command::ScrollUp"),
 
-            SetMark             => write!(f, "command::SetMark"),
             KeyboardQuit        => write!(f, "command::KeyboardQuit"),
+            Undo                => write!(f, "command::Undo"),
+
+            SetMark             => write!(f, "command::SetMark"),
         }
     }
 
@@ -87,8 +92,11 @@ impl str::FromStr for Command {
             "scroll-down"           => ScrollDown,
             "scroll-up"             => ScrollUp,
 
-            "set-mark"              => SetMark,
+            // Error recovery
             "keyboard-quit"         => KeyboardQuit,
+            "undo"                  => Undo,
+
+            "set-mark"              => SetMark,
 
             _                       => return Err(format!("Unknown command: '{}'", s)),
         })

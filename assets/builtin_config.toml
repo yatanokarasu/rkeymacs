@@ -17,6 +17,9 @@
 "C-v" = "scroll-down"
 "M-v" = "scroll-up"
 
+# --- Error recovery ---
+"C-g" = "keyboard-quit"
+"C-/" = "undo"
+
 # --- Special ---
 "C-Space" = "set-mark"
-"C-g" = "keyboard-quit"
