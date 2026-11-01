@@ -27,6 +27,10 @@ pub(crate) enum Command {
     ScrollDown,
     ScrollUp,
 
+    // Edit commands
+    DeleteBackwardChar,
+    DeleteChar,
+
     // Error recovery commands
     KeyboardQuit,
     Undo,
@@ -58,6 +62,9 @@ impl fmt::Display for Command {
             ScrollDown          => write!(f, "command::ScrollDown"),
             ScrollUp            => write!(f, "command::ScrollUp"),
 
+            DeleteBackwardChar  => write!(f, "command::DeleteBackwardChar"),
+            DeleteChar          => write!(f, "command::DeleteChar"),
+
             KeyboardQuit        => write!(f, "command::KeyboardQuit"),
             Undo                => write!(f, "command::Undo"),
 
@@ -74,7 +81,7 @@ impl str::FromStr for Command {
         use Command::*;
 
         Ok(match s {
-            // move cursor commands
+            // Move cursor commands
             "forward-char"          => ForwardChar,
             "backward-char"         => BackwardChar,
             "next-line"             => NextLine,
@@ -91,6 +98,10 @@ impl str::FromStr for Command {
 
             "scroll-down"           => ScrollDown,
             "scroll-up"             => ScrollUp,
+
+            // Edit commands
+            "delete-backward-char"  => DeleteBackwardChar,
+            "delete-char"           => DeleteChar,
 
             // Error recovery
             "keyboard-quit"         => KeyboardQuit,

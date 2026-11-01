@@ -76,6 +76,9 @@ impl Planner for WindowsPlanner {
             ScrollDown          => self.move_cursor(Key::PageDown),
             ScrollUp            => self.move_cursor(Key::PageUp),
 
+            DeleteBackwardChar  => self.edit(Key::Backspace),
+            DeleteChar          => self.edit(Key::Delete),
+
             KeyboardQuit        => self.mark_state_to(false),
             Undo                => self.undo(),
 
@@ -103,6 +106,13 @@ impl WindowsPlanner {
     fn undo(&self) -> Plan {
         PlanBuilder::new()
             .press(Chord::new(Key::Char('z'), Modifier::CTRL))
+            .build()
+    }
+
+
+    fn edit<C: Into<Chord>>(&self, chordable: C) -> Plan {
+        PlanBuilder::new()
+            .press(chordable.into())
             .build()
     }
 

@@ -3,7 +3,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_0, VK_9,
     VK_A, VK_Z,
     VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
-    VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
+    VK_BACK, VK_DELETE, VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
     VK_CONTROL, VK_LWIN, VK_MENU, VK_SHIFT,
     VK_OEM_2, VK_OEM_COMMA, VK_OEM_PERIOD,
 };
@@ -64,6 +64,8 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
             _ if vk == VK_SPACE.0   => Key::Space,
             _ if vk == VK_NEXT.0    => Key::PageDown,
             _ if vk == VK_PRIOR.0   => Key::PageUp,
+            _ if vk == VK_BACK.0    => Key::Backspace,
+            _ if vk == VK_DELETE.0  => Key::Delete,
 
             _ => return None,
         })
@@ -135,18 +137,21 @@ impl VirtualKeyConvertable for Key {
         Some(match self {
             Key::Char(c) if c.is_ascii_alphabetic() => VIRTUAL_KEY(c.to_ascii_uppercase() as u16),
 
-            Key::Right  => VK_RIGHT,
-            Key::Left   => VK_LEFT,
-            Key::Down   => VK_DOWN,
-            Key::Up     => VK_UP,
+            Key::Right      => VK_RIGHT,
+            Key::Left       => VK_LEFT,
+            Key::Down       => VK_DOWN,
+            Key::Up         => VK_UP,
 
-            Key::Home   => VK_HOME,
-            Key::End    => VK_END,
+            Key::Home       => VK_HOME,
+            Key::End        => VK_END,
 
             Key::PageDown   => VK_NEXT,
             Key::PageUp     => VK_PRIOR,
 
-            Key::Space  => VK_SPACE,
+            Key::Backspace  => VK_BACK,
+            Key::Delete     => VK_DELETE,
+
+            Key::Space      => VK_SPACE,
 
             _ => return None,
         })

@@ -17,6 +17,10 @@
 "C-v" = "scroll-down"
 "M-v" = "scroll-up"
 
+# --- Edit ---
+"C-h" = "delete-backward-char"
+"C-d" = "delete-char"
+
 # --- Error recovery ---
 "C-g" = "keyboard-quit"
 "C-/" = "undo"

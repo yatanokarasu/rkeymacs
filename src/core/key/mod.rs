@@ -26,6 +26,9 @@ pub(crate) enum Key {
     PageUp,
     PageDown,
 
+    Backspace,
+    Delete,
+
     Space,
 
     F(u8),
@@ -66,6 +69,9 @@ impl Key {
             "page-down" => Key::PageDown,
             "page-up"   => Key::PageUp,
 
+            "backspace" => Key::Backspace,
+            "delete"    => Key::Delete,
+
             "space"     => Key::Space,
 
             _           => return Err(format!("Unknown key: '{}'", key)),
@@ -103,6 +109,9 @@ impl fmt::Display for Key {
 
             Key::PageDown   => write!(f, "PageDown"),
             Key::PageUp     => write!(f, "PageUp"),
+
+            Key::Backspace  => write!(f, "BS"),
+            Key::Delete     => write!(f, "DEL"),
 
             Key::Space      => write!(f, "Space"),
 
