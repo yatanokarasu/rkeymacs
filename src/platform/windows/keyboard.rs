@@ -3,7 +3,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_0, VK_9,
     VK_A, VK_Z,
     VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
-    VK_END, VK_HOME, VK_SPACE,
+    VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
     VK_CONTROL, VK_LWIN, VK_MENU, VK_SHIFT,
     VK_OEM_COMMA, VK_OEM_PERIOD,
 };
@@ -61,6 +61,8 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
             _ if vk == VK_HOME.0    => Key::Home,
             _ if vk == VK_END.0     => Key::End,
             _ if vk == VK_SPACE.0   => Key::Space,
+            _ if vk == VK_NEXT.0    => Key::PageDown,
+            _ if vk == VK_PRIOR.0   => Key::PageUp,
 
             _ => return None,
         })
@@ -139,6 +141,9 @@ impl VirtualKeyConvertable for Key {
 
             Key::Home   => VK_HOME,
             Key::End    => VK_END,
+
+            Key::PageDown   => VK_NEXT,
+            Key::PageUp     => VK_PRIOR,
 
             Key::Space  => VK_SPACE,
 

@@ -9,6 +9,7 @@ use crate::core::key::Chord;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum Command {
+    // Move cursor commands
     ForwardChar,
     BackwardChar,
     NextLine,
@@ -23,6 +24,10 @@ pub(crate) enum Command {
     ForwardWord,
     BackwardWord,
 
+    ScrollDown,
+    ScrollUp,
+
+    // Other commands
     SetMark,
     KeyboardQuit,
 }
@@ -47,6 +52,9 @@ impl fmt::Display for Command {
             ForwardWord         => write!(f, "command::ForwardWord"),
             BackwardWord        => write!(f, "command::BackwardWord"),
 
+            ScrollDown          => write!(f, "command::ScrollDown"),
+            ScrollUp            => write!(f, "command::ScrollUp"),
+
             SetMark             => write!(f, "command::SetMark"),
             KeyboardQuit        => write!(f, "command::KeyboardQuit"),
         }
@@ -61,6 +69,7 @@ impl str::FromStr for Command {
         use Command::*;
 
         Ok(match s {
+            // move cursor commands
             "forward-char"          => ForwardChar,
             "backward-char"         => BackwardChar,
             "next-line"             => NextLine,
@@ -74,6 +83,9 @@ impl str::FromStr for Command {
 
             "forward-word"          => ForwardWord,
             "backward-word"         => BackwardWord,
+
+            "scroll-down"           => ScrollDown,
+            "scroll-up"             => ScrollUp,
 
             "set-mark"              => SetMark,
             "keyboard-quit"         => KeyboardQuit,

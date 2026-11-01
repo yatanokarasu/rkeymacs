@@ -73,6 +73,9 @@ impl Planner for WindowsPlanner {
             ForwardWord         => self.forward_word(),
             BackwardWord        => self.backward_word(),
 
+            ScrollDown          => self.scroll_down(),
+            ScrollUp            => self.scroll_up(),
+
             SetMark             => self.mark_state_to(true),
             KeyboardQuit        => self.mark_state_to(false),
         };
@@ -123,6 +126,22 @@ impl WindowsPlanner {
         PlanBuilder::new()
             .press(Key::End)
             .with(Modifier::CTRL)
+            .shifted_if(self.state.is_activated())
+            .build()
+    }
+
+
+    fn scroll_down(&self) -> Plan {
+        PlanBuilder::new()
+            .press(Key::PageDown)
+            .shifted_if(self.state.is_activated())
+            .build()
+    }
+
+
+    fn scroll_up(&self) -> Plan {
+        PlanBuilder::new()
+            .press(Key::PageUp)
             .shifted_if(self.state.is_activated())
             .build()
     }

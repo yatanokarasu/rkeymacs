@@ -23,6 +23,9 @@ pub(crate) enum Key {
     Home,
     End,
 
+    PageUp,
+    PageDown,
+
     Space,
 
     F(u8),
@@ -52,17 +55,20 @@ impl Key {
 
     fn parse_named_key(key: &str) -> Result<Self, String> {
         Ok(match key.to_ascii_lowercase().as_str() {
-            "right" => Key::Right,
-            "left"  => Key::Left,
-            "down"  => Key::Down,
-            "up"    => Key::Up,
+            "right"     => Key::Right,
+            "left"      => Key::Left,
+            "down"      => Key::Down,
+            "up"        => Key::Up,
 
-            "home"  => Key::Home,
-            "end"   => Key::End,
+            "home"      => Key::Home,
+            "end"       => Key::End,
 
-            "space" => Key::Space,
+            "page-down" => Key::PageDown,
+            "page-up"   => Key::PageUp,
 
-            _       => return Err(format!("Unknown key: '{}'", key)),
+            "space"     => Key::Space,
+
+            _           => return Err(format!("Unknown key: '{}'", key)),
         })
     }
 
@@ -94,6 +100,9 @@ impl fmt::Display for Key {
 
             Key::Home       => write!(f, "Home"),
             Key::End        => write!(f, "End"),
+
+            Key::PageDown   => write!(f, "PageDown"),
+            Key::PageUp     => write!(f, "PageUp"),
 
             Key::Space      => write!(f, "Space"),
 

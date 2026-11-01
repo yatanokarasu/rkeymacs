@@ -14,6 +14,9 @@
 "M-f" = "forward-word"
 "M-b" = "backward-word"
 
+"C-v" = "scroll-down"
+"M-v" = "scroll-up"
+
 # --- Special ---
 "C-Space" = "set-mark"
 "C-g" = "keyboard-quit"
