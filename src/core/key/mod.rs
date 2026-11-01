@@ -58,23 +58,23 @@ impl Key {
 
     fn parse_named_key(key: &str) -> Result<Self, String> {
         Ok(match key.to_ascii_lowercase().as_str() {
-            "right"     => Key::Right,
-            "left"      => Key::Left,
-            "down"      => Key::Down,
-            "up"        => Key::Up,
+            "right"                 => Key::Right,
+            "left"                  => Key::Left,
+            "down"                  => Key::Down,
+            "up"                    => Key::Up,
 
-            "home"      => Key::Home,
-            "end"       => Key::End,
+            "home"                  => Key::Home,
+            "end"                   => Key::End,
 
-            "page-down" => Key::PageDown,
-            "page-up"   => Key::PageUp,
+            "page-down" | "next"    => Key::PageDown,
+            "page-up"   | "prior"   => Key::PageUp,
 
-            "backspace" => Key::Backspace,
-            "delete"    => Key::Delete,
+            "backspace" | "bs"      => Key::Backspace,
+            "delete"    | "del"     => Key::Delete,
 
-            "space"     => Key::Space,
+            "space"                 => Key::Space,
 
-            _           => return Err(format!("Unknown key: '{}'", key)),
+            _                       => return Err(format!("Unknown key: '{}'", key)),
         })
     }
 

@@ -21,6 +21,9 @@
 "C-h" = "delete-backward-char"
 "C-d" = "delete-char"
 
+"M-h" = "backward-kill-word"
+"M-d" = "kill-word"
+
 # --- Error recovery ---
 "C-g" = "keyboard-quit"
 "C-/" = "undo"

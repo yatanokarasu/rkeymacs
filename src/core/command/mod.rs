@@ -31,6 +31,9 @@ pub(crate) enum Command {
     DeleteBackwardChar,
     DeleteChar,
 
+    BackwardKillWord,
+    KillWord,
+
     // Error recovery commands
     KeyboardQuit,
     Undo,
@@ -64,6 +67,9 @@ impl fmt::Display for Command {
 
             DeleteBackwardChar  => write!(f, "command::DeleteBackwardChar"),
             DeleteChar          => write!(f, "command::DeleteChar"),
+
+            BackwardKillWord    => write!(f, "command::BackwardKillWord"),
+            KillWord            => write!(f, "command::KillWord"),
 
             KeyboardQuit        => write!(f, "command::KeyboardQuit"),
             Undo                => write!(f, "command::Undo"),
@@ -102,6 +108,9 @@ impl str::FromStr for Command {
             // Edit commands
             "delete-backward-char"  => DeleteBackwardChar,
             "delete-char"           => DeleteChar,
+
+            "backward-kill-word"    => BackwardKillWord,
+            "kill-word"             => KillWord,
 
             // Error recovery
             "keyboard-quit"         => KeyboardQuit,

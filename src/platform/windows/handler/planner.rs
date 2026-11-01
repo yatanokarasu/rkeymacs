@@ -79,6 +79,9 @@ impl Planner for WindowsPlanner {
             DeleteBackwardChar  => self.edit(Key::Backspace),
             DeleteChar          => self.edit(Key::Delete),
 
+            BackwardKillWord    => self.kill_word(Key::Left),
+            KillWord            => self.kill_word(Key::Right),
+
             KeyboardQuit        => self.mark_state_to(false),
             Undo                => self.undo(),
 
@@ -103,16 +106,25 @@ impl WindowsPlanner {
     }
 
 
-    fn undo(&self) -> Plan {
+    fn edit<C: Into<Chord>>(&self, chordable: C) -> Plan {
         PlanBuilder::new()
-            .press(Chord::new(Key::Char('z'), Modifier::CTRL))
+            .press(chordable.into())
             .build()
     }
 
 
-    fn edit<C: Into<Chord>>(&self, chordable: C) -> Plan {
+    fn kill_word<C: Into<Chord>>(&self, chordable: C) -> Plan {
         PlanBuilder::new()
             .press(chordable.into())
+            .with(Modifier::CTRL | Modifier::SHIFT)
+            .press(Key::Delete)
+            .build()
+    }
+
+
+    fn undo(&self) -> Plan {
+        PlanBuilder::new()
+            .press(Chord::new(Key::Char('z'), Modifier::CTRL))
             .build()
     }
 
