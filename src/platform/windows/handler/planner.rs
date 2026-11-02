@@ -83,6 +83,7 @@ impl Planner for WindowsPlanner {
             KillWord            => self.kill_word(Key::Right),
 
             KillLine            => self.kill_line(),
+            KillRegion          => self.kill_region(),
 
             KeyboardQuit        => self.mark_state_to(false),
             Undo                => self.undo(),
@@ -135,6 +136,15 @@ impl WindowsPlanner {
 
         builder
             .press(Chord::new(Key::End, Modifier::SHIFT))
+            .press(Chord::new(Key::Char('x'), Modifier::CTRL))
+            .build()
+    }
+
+
+    fn kill_region(&self) -> Plan {
+        self.state.deactivate();
+
+        PlanBuilder::new()
             .press(Chord::new(Key::Char('x'), Modifier::CTRL))
             .build()
     }
