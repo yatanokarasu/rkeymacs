@@ -84,6 +84,7 @@ impl Planner for WindowsPlanner {
 
             KillLine            => self.kill_line(),
             KillRegion          => self.kill_region(),
+            KillRingSave        => self.kill_ring_save(),
 
             KeyboardQuit        => self.mark_state_to(false),
             Undo                => self.undo(),
@@ -146,6 +147,15 @@ impl WindowsPlanner {
 
         PlanBuilder::new()
             .press(Chord::new(Key::Char('x'), Modifier::CTRL))
+            .build()
+    }
+
+
+    fn kill_ring_save(&self) -> Plan {
+        self.state.deactivate();
+
+        PlanBuilder::new()
+            .press(Chord::new(Key::Char('c'), Modifier::CTRL))
             .build()
     }
 

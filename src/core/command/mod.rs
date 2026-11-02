@@ -36,6 +36,7 @@ pub(crate) enum Command {
 
     KillLine,
     KillRegion,
+    KillRingSave,
 
     // Error recovery commands
     KeyboardQuit,
@@ -76,6 +77,7 @@ impl fmt::Display for Command {
 
             KillLine            => write!(f, "command::KillLine"),
             KillRegion          => write!(f, "command::KillRegion"),
+            KillRingSave        => write!(f, "command::KillRingSave"),
 
             KeyboardQuit        => write!(f, "command::KeyboardQuit"),
             Undo                => write!(f, "command::Undo"),
@@ -120,6 +122,7 @@ impl str::FromStr for Command {
 
             "kill-line"             => KillLine,
             "kill-region"           => KillRegion,
+            "kill-ring-save"        => KillRingSave,
 
             // Error recovery
             "keyboard-quit"         => KeyboardQuit,

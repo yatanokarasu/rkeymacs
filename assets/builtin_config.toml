@@ -26,6 +26,7 @@
 
 "C-k" = "kill-line"
 "C-w" = "kill-region"
+"M-w" = "kill-ring-save"
 
 # --- Error recovery ---
 "C-g" = "keyboard-quit"
