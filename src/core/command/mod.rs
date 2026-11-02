@@ -34,6 +34,8 @@ pub(crate) enum Command {
     BackwardKillWord,
     KillWord,
 
+    KillLine,
+
     // Error recovery commands
     KeyboardQuit,
     Undo,
@@ -70,6 +72,8 @@ impl fmt::Display for Command {
 
             BackwardKillWord    => write!(f, "command::BackwardKillWord"),
             KillWord            => write!(f, "command::KillWord"),
+
+            KillLine            => write!(f, "command::KillLine"),
 
             KeyboardQuit        => write!(f, "command::KeyboardQuit"),
             Undo                => write!(f, "command::Undo"),
@@ -111,6 +115,8 @@ impl str::FromStr for Command {
 
             "backward-kill-word"    => BackwardKillWord,
             "kill-word"             => KillWord,
+
+            "kill-line"             => KillLine,
 
             // Error recovery
             "keyboard-quit"         => KeyboardQuit,

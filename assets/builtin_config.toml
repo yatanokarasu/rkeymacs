@@ -24,6 +24,8 @@
 "M-h" = "backward-kill-word"
 "M-d" = "kill-word"
 
+"C-k" = "kill-line"
+
 # --- Error recovery ---
 "C-g" = "keyboard-quit"
 "C-/" = "undo"

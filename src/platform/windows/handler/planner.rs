@@ -82,6 +82,8 @@ impl Planner for WindowsPlanner {
             BackwardKillWord    => self.kill_word(Key::Left),
             KillWord            => self.kill_word(Key::Right),
 
+            KillLine            => self.kill_line(),
+
             KeyboardQuit        => self.mark_state_to(false),
             Undo                => self.undo(),
 
@@ -118,6 +120,22 @@ impl WindowsPlanner {
             .press(chordable.into())
             .with(Modifier::CTRL | Modifier::SHIFT)
             .press(Key::Delete)
+            .build()
+    }
+
+
+    fn kill_line(&self) -> Plan {
+        let mut builder = PlanBuilder::new();
+
+        if self.state.is_activated() {
+            self.state.deactivate();
+
+            builder = builder.press(Key::Left);
+        }
+
+        builder
+            .press(Chord::new(Key::End, Modifier::SHIFT))
+            .press(Chord::new(Key::Char('x'), Modifier::CTRL))
             .build()
     }
 
