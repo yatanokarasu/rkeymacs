@@ -5,7 +5,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
     VK_BACK, VK_DELETE, VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
     VK_CONTROL, VK_LWIN, VK_MENU, VK_SHIFT,
-    VK_OEM_2, VK_OEM_COMMA, VK_OEM_PERIOD,
+    VK_F1, VK_OEM_2, VK_OEM_COMMA, VK_OEM_PERIOD,
 };
 
 use crate::core::key::{Key, Modifier};
@@ -152,6 +152,8 @@ impl VirtualKeyConvertable for Key {
             Key::Delete     => VK_DELETE,
 
             Key::Space      => VK_SPACE,
+
+            Key::F(n) if (1..=12).contains(&n) => VIRTUAL_KEY(VK_F1.0 + u16::from(n - 1)),
 
             _ => return None,
         })

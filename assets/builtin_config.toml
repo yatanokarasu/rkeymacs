@@ -17,6 +17,9 @@
 "C-v" = "scroll-down"
 "M-v" = "scroll-up"
 
+# --- Search and replace ---
+"C-s" = "isearch-forward"
+
 # --- Edit ---
 "C-h" = "delete-backward-char"
 "C-d" = "delete-char"

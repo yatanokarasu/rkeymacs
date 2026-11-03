@@ -32,6 +32,8 @@ pub(crate) enum Key {
     Space,
 
     F(u8),
+
+    Empty,
 }
 
 impl Key {
@@ -116,6 +118,8 @@ impl fmt::Display for Key {
             Key::Space      => write!(f, "Space"),
 
             Key::F(n)       => write!(f, "F{}", n),
+
+            Key::Empty      => write!(f, ""),
         }
     }
 

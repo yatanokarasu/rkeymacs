@@ -76,6 +76,8 @@ impl Planner for WindowsPlanner {
             ScrollDown          => self.move_cursor(Key::PageDown),
             ScrollUp            => self.move_cursor(Key::PageUp),
 
+            IsearchForward      => self.search(false),
+
             DeleteBackwardChar  => self.edit(Key::Backspace),
             DeleteChar          => self.edit(Key::Delete),
 
@@ -108,6 +110,14 @@ impl WindowsPlanner {
         PlanBuilder::new()
             .press(chordable)
             .shifted_if(self.state.is_activated())
+            .build()
+    }
+
+
+    fn search(&self, is_backward: bool) -> Plan {
+        PlanBuilder::new()
+            .press(Key::F(3))
+            .shifted_if(is_backward)
             .build()
     }
 
