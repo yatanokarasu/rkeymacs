@@ -18,6 +18,7 @@
 "M-v" = "scroll-up"
 
 # --- Search and replace ---
+"C-r" = "isearch-backward"
 "C-s" = "isearch-forward"
 
 # --- Edit ---

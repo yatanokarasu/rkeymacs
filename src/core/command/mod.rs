@@ -28,6 +28,7 @@ pub(crate) enum Command {
     ScrollUp,
 
     // Search and replace commands
+    IsearchBackward,
     IsearchForward,
 
     // Edit commands
@@ -74,6 +75,7 @@ impl fmt::Display for Command {
             ScrollDown          => write!(f, "command::ScrollDown"),
             ScrollUp            => write!(f, "command::ScrollUp"),
 
+            IsearchBackward     => write!(f, "command:IsearchBackward"),
             IsearchForward      => write!(f, "command::IsearchForward"),
 
             DeleteBackwardChar  => write!(f, "command::DeleteBackwardChar"),
@@ -123,6 +125,7 @@ impl str::FromStr for Command {
             "scroll-up"             => ScrollUp,
 
             // Search and replace commands
+            "isearch-backward"      => IsearchBackward,
             "isearch-forward"       => IsearchForward,
 
             // Edit commands

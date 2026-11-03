@@ -76,6 +76,7 @@ impl Planner for WindowsPlanner {
             ScrollDown          => self.move_cursor(Key::PageDown),
             ScrollUp            => self.move_cursor(Key::PageUp),
 
+            IsearchBackward     => self.search(true),
             IsearchForward      => self.search(false),
 
             DeleteBackwardChar  => self.edit(Key::Backspace),
