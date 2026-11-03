@@ -86,6 +86,8 @@ impl Planner for WindowsPlanner {
             KillRegion          => self.kill_region(),
             KillRingSave        => self.kill_ring_save(),
 
+            Yank                => self.yank(),
+
             KeyboardQuit        => self.mark_state_to(false),
             Undo                => self.undo(),
 
@@ -156,6 +158,15 @@ impl WindowsPlanner {
 
         PlanBuilder::new()
             .press(Chord::new(Key::Char('c'), Modifier::CTRL))
+            .build()
+    }
+
+
+    fn yank(&self) -> Plan {
+        self.state.deactivate();
+
+        PlanBuilder::new()
+            .press(Chord::new(Key::Char('v'), Modifier::CTRL))
             .build()
     }
 

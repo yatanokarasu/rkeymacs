@@ -28,6 +28,8 @@
 "C-w" = "kill-region"
 "M-w" = "kill-ring-save"
 
+"C-y" = "yank"
+
 # --- Error recovery ---
 "C-g" = "keyboard-quit"
 "C-/" = "undo"
