@@ -50,6 +50,7 @@ pub(crate) enum Command {
 
     // Other commands
     SetMark,
+    ToggleRkeymacs,
 }
 
 impl fmt::Display for Command {
@@ -94,6 +95,7 @@ impl fmt::Display for Command {
             Undo                => write!(f, "command::Undo"),
 
             SetMark             => write!(f, "command::SetMark"),
+            ToggleRkeymacs      => write!(f, "command::ToggleRkeymacs"),
         }
     }
 
@@ -145,7 +147,9 @@ impl str::FromStr for Command {
             "keyboard-quit"         => KeyboardQuit,
             "undo"                  => Undo,
 
+            // Others
             "set-mark"              => SetMark,
+            "toggle-rkeymacs"       => ToggleRkeymacs,
 
             _                       => return Err(format!("Unknown command: '{}'", s)),
         })

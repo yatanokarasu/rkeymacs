@@ -95,6 +95,8 @@ impl Planner for WindowsPlanner {
             Undo                => self.undo(),
 
             SetMark             => self.mark_state_to(true),
+
+            _                   => Plan::ToSwallow,
         };
 
         plan.shield(chord.mods)

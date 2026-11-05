@@ -40,3 +40,4 @@
 
 # --- Special ---
 "C-Space" = "set-mark"
+"C-q" = "toggle-rkeymacs"

@@ -1,4 +1,6 @@
-use crate::core::Disposition;
+use std::rc::Rc;
+
+use crate::core::{Disposition, ToggleState};
 use crate::core::command::Intent;
 use crate::core::key::Event;
 
@@ -31,9 +33,11 @@ pub trait Platform {
 
 pub trait EventLoop {
 
-    fn start<F>(self, listener: F)
+    fn install<F>(&mut self, listener: F, toggle_state: Rc<ToggleState>)
     where
         F: Fn(Event) -> Disposition + 'static;
+
+    fn start_loop(&self);
 
 }
 

@@ -1,3 +1,4 @@
+use std::rc::Rc;
 
 use windows::Win32::Foundation::{LPARAM, WPARAM};
 use windows::Win32::UI::Input::KeyboardAndMouse::{
@@ -11,8 +12,8 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::Runtime;
-use crate::core::Disposition;
-use crate::core::key::{Event, Modifier};
+use crate::core::{Disposition, ToggleState};
+use crate::core::key::{Chord, Event, Key, Modifier};
 use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
 use crate::platform::windows::keyboard::Keyboard;
 
@@ -20,6 +21,7 @@ use crate::platform::windows::keyboard::Keyboard;
 pub struct WindowsKeyCodeShim<L> {
     delegate: L,
     keyboard: Keyboard,
+    toggle_state: Rc<ToggleState>,
 }
 
 impl<L> WindowsKeyCodeShim<L>
@@ -27,11 +29,17 @@ where
     L: Fn(Event) -> Disposition
 {
 
-    pub fn new(delegate: L) -> Self {
+    pub fn new(delegate: L, toggle_state: Rc<ToggleState>) -> Self {
         Self{
             delegate,
             keyboard: Keyboard::new(),
+            toggle_state,
         }
+    }
+
+
+    fn is_rkeymacs_enabled(&self) -> bool {
+        self.toggle_state.current_state()
     }
 
 
@@ -92,7 +100,15 @@ where
         let kb = unsafe { &*(lparam.0 as *const KBDLLHOOKSTRUCT) };
 
         match self.canonicalize_event(kb) {
-            Some(event) => (self.delegate)(event),
+            Some(event) => {
+                if self.is_rkeymacs_enabled() || event.chord() == Chord::new(Key::Char('q'), Modifier::CTRL) {
+                    return (self.delegate)(event)
+                }
+
+                println!("Disabled rkeymacs.");
+
+                return Disposition::Passthrough
+            },
             None        => Disposition::Passthrough,
         }
     }
