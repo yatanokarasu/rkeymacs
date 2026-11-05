@@ -6,7 +6,7 @@ use core::Engine;
 use core::config::RawConfig;
 use std::rc::Rc;
 
-use crate::core::{Disposition, ToggleState};
+use crate::core::ToggleState;
 use crate::platform::EventLoop;
 
 
@@ -34,14 +34,7 @@ impl Runtime {
             platform,
             Rc::clone(&toggle_state),
         );
-        event_loop.install(move |event| {
-            if event.injected {
-                return Disposition::Passthrough
-            }
-
-            engine.on_key(event)
-        }, toggle_state);
-
+        event_loop.install(move |event| engine.on_key(event), toggle_state);
         event_loop.start_loop()
     }
 

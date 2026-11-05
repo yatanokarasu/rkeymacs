@@ -7,7 +7,6 @@ use super::chord::Chord;
 pub(crate) struct Event {
     pub(crate) key: Key,
     pub(crate) mods: Modifier,
-    pub(crate) injected: bool,
 }
 
 impl Event {

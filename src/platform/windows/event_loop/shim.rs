@@ -79,7 +79,6 @@ where
             mods if !mods.is_empty() => Some(Event {
                 key,
                 mods,
-                injected: kb.dwExtraInfo == Runtime::SERIAL_ID,
             }),
             _ => None,
         }
@@ -93,11 +92,16 @@ where
 {
 
     fn handle(&self, code: i32, wparam: WPARAM, lparam: LPARAM) -> Disposition {
-        if self.should_passthrough(code, wparam, lparam) {
+        let kb = unsafe { &*(lparam.0 as *const KBDLLHOOKSTRUCT) };
+
+        if kb.dwExtraInfo == Runtime::SERIAL_ID {
             return Disposition::Passthrough;
         }
 
-        let kb = unsafe { &*(lparam.0 as *const KBDLLHOOKSTRUCT) };
+
+        if self.should_passthrough(code, wparam, lparam) {
+            return Disposition::Passthrough;
+        }
 
         match self.canonicalize_event(kb) {
             Some(event) => {
