@@ -44,10 +44,6 @@ where
 
 
     fn should_passthrough(&self, code: i32, wparam: WPARAM, _lparam: LPARAM) -> bool {
-        if code != HC_ACTION as i32 {
-            return true;
-        }
-
         if matches!(wparam.0 as u32, WM_KEYUP | WM_SYSKEYUP) {
             return true;
         }
@@ -92,6 +88,10 @@ where
 {
 
     fn handle(&self, code: i32, wparam: WPARAM, lparam: LPARAM) -> Disposition {
+        if code != HC_ACTION as i32 {
+            return Disposition::Passthrough
+        }
+
         let kb = unsafe { &*(lparam.0 as *const KBDLLHOOKSTRUCT) };
 
         if kb.dwExtraInfo == Runtime::SERIAL_ID {
