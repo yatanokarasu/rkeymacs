@@ -4,11 +4,20 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_A, VK_Z,
     VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
     VK_BACK, VK_DELETE, VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
-    VK_CONTROL, VK_LWIN, VK_MENU, VK_SHIFT,
+    VK_CONTROL, VK_LCONTROL, VK_RCONTROL,
+    VK_SHIFT, VK_LSHIFT, VK_RSHIFT,
+    VK_MENU, VK_LMENU, VK_RMENU,
+    VK_LWIN,
     VK_F1, VK_OEM_2, VK_OEM_COMMA, VK_OEM_PERIOD,
 };
 
 use crate::core::key::{Key, Modifier};
+
+
+pub(in crate::platform::windows) enum CanonicalizedInput {
+    Key(Key),
+    Modiifier(Modifier),
+}
 
 
 pub struct JisLayout;
@@ -31,19 +40,23 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
     }
 
 
-    fn key_from_vk(&self, vk: u32) -> Option<Key> {
+    fn key_from_vk(&self, vk: u32) -> Option<CanonicalizedInput> {
         let vk = u16::try_from(vk).ok()?;
 
-        if let Some(named_key) = self.parse_named_key(vk) {
-            return Some(named_key);
+        if let Some(mods) = self.to_modifier(vk) {
+            return Some(CanonicalizedInput::Modiifier(mods))
         }
 
-        Some(match vk {
+        if let Some(named_key) = self.parse_named_key(vk) {
+            return Some(CanonicalizedInput::Key(named_key))
+        }
+
+        Some(CanonicalizedInput::Key(match vk {
             v if self.is_alphabet(v)    => Key::Char((v as u8).to_ascii_lowercase() as char),
             v if self.is_number(v)      => Key::Char(v as u8 as char),
 
             others => Key::Char(self.oem_char(others)?),
-        })
+        }))
     }
 
 
@@ -69,6 +82,32 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
 
             _ => return None,
         })
+    }
+
+
+    fn to_modifier(&self, vk: u16) -> Option<Modifier> {
+        Some(match vk {
+            v if self.is_control(v) => Modifier::CTRL,
+            v if self.is_shift(v)   => Modifier::SHIFT,
+            v if self.is_alt(v)     => Modifier::ALT,
+
+            _ => return None,
+        })
+    }
+
+
+    fn is_control(&self, vk: u16) -> bool {
+        vk == VK_CONTROL.0 || vk == VK_LCONTROL.0 || vk == VK_RCONTROL.0
+    }
+
+
+    fn is_shift(&self, vk: u16) -> bool {
+        vk == VK_SHIFT.0 || vk == VK_LSHIFT.0 || vk == VK_RSHIFT.0
+    }
+
+
+    fn is_alt(&self, vk: u16) -> bool {
+        vk == VK_MENU.0 || vk == VK_LMENU.0 || vk == VK_RMENU.0
     }
 
 }
@@ -118,7 +157,7 @@ impl Keyboard {
     }
 
 
-    pub fn key_from_vk(&self, vk: u32) -> Option<Key> {
+    pub fn resolve(&self, vk: u32) -> Option<CanonicalizedInput> {
         match self {
             Keyboard::Jis(layout)   => layout.key_from_vk(vk),
             Keyboard::Us(layout)    => layout.key_from_vk(vk),

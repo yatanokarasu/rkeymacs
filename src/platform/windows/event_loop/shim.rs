@@ -15,7 +15,7 @@ use crate::Runtime;
 use crate::core::{Disposition, ToggleState};
 use crate::core::key::{Chord, Event, Key, Modifier};
 use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
-use crate::platform::windows::keyboard::Keyboard;
+use crate::platform::windows::keyboard::{CanonicalizedInput, Keyboard};
 
 
 pub struct WindowsKeyCodeShim<L> {
@@ -69,14 +69,19 @@ where
 
 
     fn canonicalize_event(&self, kb: &KBDLLHOOKSTRUCT) -> Option<Event> {
-        let key = self.keyboard.key_from_vk(kb.vkCode)?;
+        let key = self.keyboard.resolve(kb.vkCode)?;
 
-        match self.get_modifiers() {
-            mods if !mods.is_empty() => Some(Event {
-                key,
-                mods,
-            }),
-            _ => None,
+        match key {
+            CanonicalizedInput::Modiifier(_) => None,
+            CanonicalizedInput::Key(key) => {
+                match self.get_modifiers() {
+                    mods if !mods.is_empty() => Some(Event {
+                        key,
+                        mods,
+                    }),
+                    _ => None,
+                }
+            },
         }
     }
 
