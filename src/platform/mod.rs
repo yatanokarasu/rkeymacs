@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use crate::core::{Disposition, ToggleState};
 use crate::core::command::Intent;
-use crate::core::key::Event;
+use crate::core::key::Chord;
 
 
 pub struct LowLevelInstructions<T> {
@@ -35,7 +35,7 @@ pub trait EventLoop {
 
     fn install<F>(&mut self, listener: F, toggle_state: Rc<ToggleState>)
     where
-        F: Fn(Event) -> Disposition + 'static;
+        F: Fn(Chord) -> Disposition + 'static;
 
     fn start_loop(&self);
 

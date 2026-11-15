@@ -9,7 +9,7 @@ use std::rc::Rc;
 
 use crate::core::command::{Command, Intent};
 use crate::core::config::keymap::{KeyMaps, Resolution};
-use crate::core::key::{Chord, Event};
+use crate::core::key::Chord;
 use crate::platform::Platform;
 
 
@@ -62,9 +62,8 @@ impl<P: Platform> Engine<P> {
     }
 
 
-    pub fn on_key(&self, event: Event) -> Disposition {
-        let chord = event.chord();
-        println!("Engine::execute(event = {})", chord);
+    pub fn on_key(&self, chord: Chord) -> Disposition {
+        println!("Engine::execute(chord = {})", chord);
 
         match self.resolve(&chord) {
             Resolution::Execute(command) => self.execute(Intent{ command, chord }),

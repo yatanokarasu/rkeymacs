@@ -9,7 +9,7 @@ use crate::platform::LowLevelInstructions;
 use crate::platform::windows::keyboard::VirtualKeyConvertable;
 
 
-trait ToWindowsInput: Sized {
+pub(in crate::platform::windows) trait ToWindowsInput: Sized {
     type Output;
 
     fn into_input(self, is_key_up: bool) -> Self::Output;

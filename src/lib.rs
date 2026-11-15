@@ -34,7 +34,7 @@ impl Runtime {
             platform,
             Rc::clone(&toggle_state),
         );
-        event_loop.install(move |event| engine.on_key(event), toggle_state);
+        event_loop.install(move |chord| engine.on_key(chord), toggle_state);
         event_loop.start_loop()
     }
 

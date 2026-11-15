@@ -1,6 +1,7 @@
-mod event;
+pub mod event;
 mod hook;
 mod shim;
+mod state;
 
 
 use std::rc::Rc;
@@ -29,7 +30,7 @@ impl IEventLoop for EventLoop {
 
     fn install<F>(&mut self, listener: F, toggle_state: Rc<ToggleState>)
     where
-        F: Fn(crate::core::key::Event) -> Disposition + 'static
+        F: Fn(crate::core::key::Chord) -> Disposition + 'static
     {
         let shim = WindowsKeyCodeShim::new(listener, toggle_state);
 

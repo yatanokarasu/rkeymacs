@@ -1,8 +1,6 @@
 mod chord;
-mod event;
 
 pub(crate) use chord::Chord;
-pub(crate) use event::Event;
 
 
 use std::fmt;

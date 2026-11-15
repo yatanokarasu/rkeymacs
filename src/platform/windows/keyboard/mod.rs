@@ -1,6 +1,6 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::{
     VIRTUAL_KEY,
-    VK_0, VK_9,
+    VK_0, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9,
     VK_A, VK_Z,
     VK_DOWN, VK_LEFT, VK_RIGHT, VK_UP,
     VK_BACK, VK_DELETE, VK_END, VK_HOME, VK_SPACE, VK_NEXT, VK_PRIOR,
@@ -12,11 +12,12 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 };
 
 use crate::core::key::{Key, Modifier};
+use crate::platform::windows::event_loop::event::RawChord;
 
 
-pub(in crate::platform::windows) enum CanonicalizedInput {
-    Key(Key),
-    Modiifier(Modifier),
+pub(in crate::platform::windows) enum CanonicalizedKey {
+    Plane(Key),
+    Shifted(Key),
 }
 
 
@@ -26,50 +27,43 @@ pub struct UsLayout;
 
 pub(in crate::platform::windows) trait VirtualKeyMapper {
 
-    fn specific_oem_char(&self, vk: u16) -> Option<char>;
+    fn parse_specific_oem_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey>;
+    fn parse_number_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey>;
 
 
-    fn oem_char(&self, vk: u16) -> Option<char> {
-        Some(match vk {
-            _ if vk == VK_OEM_COMMA.0   => ',',
-            _ if vk == VK_OEM_PERIOD.0  => '.',
-            _ if vk == VK_OEM_2.0       => '/',
-
-            others => self.specific_oem_char(others)?,
-        })
-    }
-
-
-    fn key_from_vk(&self, vk: u16) -> Option<CanonicalizedInput> {
-        if let Some(mods) = self.to_modifier(vk) {
-            return Some(CanonicalizedInput::Modiifier(mods))
+    fn resolve(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        if let Some(named_key) = self.parse_named_key(raw_chord) {
+            return Some(named_key)
         }
 
-        if let Some(named_key) = self.parse_named_key(vk) {
-            return Some(CanonicalizedInput::Key(named_key))
+        if let Some(alphabet) = self.parse_alphabet_key(raw_chord) {
+            return Some(alphabet)
         }
 
-        Some(CanonicalizedInput::Key(match vk {
-            v if self.is_alphabet(v)    => Key::Char((v as u8).to_ascii_lowercase() as char),
-            v if self.is_number(v)      => Key::Char(v as u8 as char),
+        if let Some(number_or_symbol) = self.parse_number_key(raw_chord) {
+            return Some(number_or_symbol)
+        }
 
-            others => Key::Char(self.oem_char(others)?),
-        }))
+        self.parse_oem_key(raw_chord)
     }
 
 
-    fn is_alphabet(&self, vk: u16) -> bool {
-        (VK_A.0..=VK_Z.0).contains(&vk)
+    fn parse_alphabet_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        let &RawChord { vk, mods: _mods } = raw_chord;
+        let is_alphabet = (VK_A.0..=VK_Z.0).contains(&vk);
+
+        if !is_alphabet {
+            return None
+        }
+
+        Some(CanonicalizedKey::Plane(Key::Char((vk as u8).to_ascii_lowercase() as char)))
     }
 
 
-    fn is_number(&self, vk: u16) -> bool {
-        (VK_0.0..=VK_9.0).contains(&vk)
-    }
+    fn parse_named_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        let &RawChord { vk, mods: _mods } = raw_chord;
 
-
-    fn parse_named_key(&self, vk: u16) -> Option<Key> {
-        Some(match vk {
+        let key = match vk {
             _ if vk == VK_HOME.0    => Key::Home,
             _ if vk == VK_END.0     => Key::End,
             _ if vk == VK_SPACE.0   => Key::Space,
@@ -79,48 +73,89 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
             _ if vk == VK_DELETE.0  => Key::Delete,
 
             _ => return None,
-        })
+        };
+
+        Some(CanonicalizedKey::Plane(key))
     }
 
 
-    fn to_modifier(&self, vk: u16) -> Option<Modifier> {
-        Some(match vk {
-            v if self.is_control(v) => Modifier::CTRL,
-            v if self.is_shift(v)   => Modifier::SHIFT,
-            v if self.is_alt(v)     => Modifier::ALT,
+    fn parse_oem_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        if let Some(common_oem_key) = self.parse_common_oem_key(raw_chord) {
+            return Some(common_oem_key)
+        }
+
+        self.parse_specific_oem_key(raw_chord)
+    }
+
+
+    fn parse_common_oem_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        let &RawChord { vk, mods } = raw_chord;
+        let is_shifted = mods.contains(Modifier::SHIFT);
+
+        use CanonicalizedKey::*;
+        let canonicalized_key = match vk {
+            _ if vk == VK_OEM_COMMA.0   => if is_shifted { Shifted(Key::Char('<')) } else { Plane(Key::Char(',')) },
+            _ if vk == VK_OEM_PERIOD.0  => if is_shifted { Shifted(Key::Char('>')) } else { Plane(Key::Char('.')) },
+            _ if vk == VK_OEM_2.0       => if is_shifted { Shifted(Key::Char('?')) } else { Plane(Key::Char('/')) },
 
             _ => return None,
-        })
-    }
+        };
 
-
-    fn is_control(&self, vk: u16) -> bool {
-        vk == VK_CONTROL.0 || vk == VK_LCONTROL.0 || vk == VK_RCONTROL.0
-    }
-
-
-    fn is_shift(&self, vk: u16) -> bool {
-        vk == VK_SHIFT.0 || vk == VK_LSHIFT.0 || vk == VK_RSHIFT.0
-    }
-
-
-    fn is_alt(&self, vk: u16) -> bool {
-        vk == VK_MENU.0 || vk == VK_LMENU.0 || vk == VK_RMENU.0
+        Some(canonicalized_key)
     }
 
 }
 
 impl VirtualKeyMapper for JisLayout {
 
-    fn specific_oem_char(&self, _vk: u16) -> Option<char> {
+    fn parse_specific_oem_key(&self, _raw_chord: &RawChord) -> Option<CanonicalizedKey> {
         None
+    }
+
+
+    fn parse_number_key(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        let &RawChord { vk, mods } = raw_chord;
+
+        let is_shifted = mods.contains(Modifier::SHIFT);
+        let is_number = (VK_0.0..=VK_9.0).contains(&vk);
+
+        if !is_number {
+            return None
+        }
+
+        let canonicalized_key = if is_shifted {
+            let key = Key::Char(match vk {
+                _ if vk == VK_0.0 => return None,
+                _ if vk == VK_1.0 => '!',
+                _ if vk == VK_2.0 => '"',
+                _ if vk == VK_3.0 => '#',
+                _ if vk == VK_4.0 => '$',
+                _ if vk == VK_5.0 => '%',
+                _ if vk == VK_6.0 => '&',
+                _ if vk == VK_7.0 => '\'',
+                _ if vk == VK_8.0 => '(',
+                _ if vk == VK_9.0 => ')',
+
+                _ => return None,
+            });
+
+            CanonicalizedKey::Shifted(key)
+        } else {
+            CanonicalizedKey::Plane(Key::Char(vk as u8 as char))
+        };
+
+        Some(canonicalized_key)
     }
 
 }
 
 impl VirtualKeyMapper for UsLayout {
 
-    fn specific_oem_char(&self, _vk: u16) -> Option<char> {
+    fn parse_specific_oem_key(&self, _raw_chord: &RawChord) -> Option<CanonicalizedKey> {
+        None
+    }
+
+    fn parse_number_key(&self, _raw_chord: &RawChord) -> Option<CanonicalizedKey> {
         None
     }
 
@@ -155,10 +190,10 @@ impl Keyboard {
     }
 
 
-    pub fn resolve(&self, vk: u16) -> Option<CanonicalizedInput> {
+    pub fn resolve(&self, raw_chord: &RawChord) -> Option<CanonicalizedKey> {
         match self {
-            Keyboard::Jis(layout)   => layout.key_from_vk(vk),
-            Keyboard::Us(layout)    => layout.key_from_vk(vk),
+            Keyboard::Jis(layout)   => layout.resolve(raw_chord),
+            Keyboard::Us(layout)    => layout.resolve(raw_chord),
         }
     }
 
