@@ -6,14 +6,11 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VIRTUAL_KEY,
     VK_CONTROL, VK_MENU, VK_SHIFT
 };
-use windows::Win32::UI::WindowsAndMessaging::{
-    KBDLLHOOKSTRUCT,
-    HC_ACTION, WM_KEYUP, WM_SYSKEYUP
-};
+use windows::Win32::UI::WindowsAndMessaging::HC_ACTION;
 
-use crate::Runtime;
 use crate::core::{Disposition, ToggleState};
 use crate::core::key::{Chord, Event, Key, Modifier};
+use crate::platform::windows::event_loop::event::{EventType, LowKeyEvent};
 use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
 use crate::platform::windows::keyboard::{CanonicalizedInput, Keyboard};
 
@@ -43,15 +40,6 @@ where
     }
 
 
-    fn should_passthrough(&self, code: i32, wparam: WPARAM, _lparam: LPARAM) -> bool {
-        if matches!(wparam.0 as u32, WM_KEYUP | WM_SYSKEYUP) {
-            return true;
-        }
-
-        false
-    }
-
-
     fn is_down(&self, vk: VIRTUAL_KEY) -> bool {
         unsafe { GetAsyncKeyState(vk.0 as i32) as u16 & 0x8000 != 0 }
     }
@@ -68,8 +56,8 @@ where
     }
 
 
-    fn canonicalize_event(&self, kb: &KBDLLHOOKSTRUCT) -> Option<Event> {
-        let key = self.keyboard.resolve(kb.vkCode)?;
+    fn canonicalize_event(&self, vk: u16) -> Option<Event> {
+        let key = self.keyboard.resolve(vk)?;
 
         match key {
             CanonicalizedInput::Modiifier(_) => None,
@@ -97,18 +85,19 @@ where
             return Disposition::Passthrough
         }
 
-        let kb = unsafe { &*(lparam.0 as *const KBDLLHOOKSTRUCT) };
+        let event = LowKeyEvent::new(wparam, lparam);
 
-        if kb.dwExtraInfo == Runtime::SERIAL_ID {
-            return Disposition::Passthrough;
+        if event.is_injected() {
+            println!("***event injected***: {}", event);
+
+            return Disposition::Passthrough
         }
 
-
-        if self.should_passthrough(code, wparam, lparam) {
-            return Disposition::Passthrough;
+        if event.kind == EventType::KeyUp {
+            return Disposition::Passthrough
         }
 
-        match self.canonicalize_event(kb) {
+        match self.canonicalize_event(event.vk) {
             Some(event) => {
                 if self.is_rkeymacs_enabled() || event.chord() == Chord::new(Key::Char('q'), Modifier::CTRL) {
                     return (self.delegate)(event)

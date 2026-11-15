@@ -40,9 +40,7 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
     }
 
 
-    fn key_from_vk(&self, vk: u32) -> Option<CanonicalizedInput> {
-        let vk = u16::try_from(vk).ok()?;
-
+    fn key_from_vk(&self, vk: u16) -> Option<CanonicalizedInput> {
         if let Some(mods) = self.to_modifier(vk) {
             return Some(CanonicalizedInput::Modiifier(mods))
         }
@@ -157,7 +155,7 @@ impl Keyboard {
     }
 
 
-    pub fn resolve(&self, vk: u32) -> Option<CanonicalizedInput> {
+    pub fn resolve(&self, vk: u16) -> Option<CanonicalizedInput> {
         match self {
             Keyboard::Jis(layout)   => layout.key_from_vk(vk),
             Keyboard::Us(layout)    => layout.key_from_vk(vk),
@@ -210,4 +208,38 @@ impl VirtualKeyConvertable for Modifier {
             _               => return None,
         })
     }
+}
+
+
+pub(in crate::platform::windows) trait FromVk: Copy {
+    type Output;
+
+    fn to_modifier(self) -> Self::Output;
+}
+
+impl FromVk for u16 {
+    type Output = Modifier;
+
+    fn to_modifier(self) -> Self::Output {
+        let vk = self;
+
+        let is_ctrl_down  = vk == VK_CONTROL.0 || vk == VK_LCONTROL.0 || vk == VK_RCONTROL.0;
+        let is_shift_down = vk == VK_SHIFT.0   || vk == VK_LSHIFT.0   || vk == VK_RSHIFT.0;
+        let is_alt_down   = vk == VK_MENU.0    || vk == VK_LMENU.0    || vk == VK_RMENU.0;
+
+        if is_ctrl_down {
+            return Modifier::CTRL
+        }
+
+        if is_shift_down {
+            return Modifier::SHIFT
+        }
+
+        if is_alt_down {
+            return Modifier::ALT
+        }
+
+        Modifier::empty()
+    }
+
 }
