@@ -4,7 +4,9 @@ use windows::Win32::Foundation::{LPARAM, WPARAM};
 use windows::Win32::UI::Input::KeyboardAndMouse::{
     GetAsyncKeyState,
     VIRTUAL_KEY,
-    VK_CONTROL, VK_MENU, VK_SHIFT
+    VK_CONTROL, VK_LCONTROL, VK_RCONTROL,
+    VK_SHIFT, VK_LSHIFT, VK_RSHIFT,
+    VK_MENU, VK_LMENU, VK_RMENU,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
     KBDLLHOOKSTRUCT,
@@ -13,7 +15,40 @@ use windows::Win32::UI::WindowsAndMessaging::{
 
 use crate::Runtime;
 use crate::core::key::Modifier;
-use crate::platform::windows::keyboard::FromVk;
+
+
+pub(in crate::platform::windows) trait FromVk: Copy {
+    type Output;
+
+    fn to_modifier(self) -> Self::Output;
+}
+
+impl FromVk for u16 {
+    type Output = Modifier;
+
+    fn to_modifier(self) -> Self::Output {
+        let vk = self;
+
+        let is_ctrl_down  = vk == VK_CONTROL.0 || vk == VK_LCONTROL.0 || vk == VK_RCONTROL.0;
+        let is_shift_down = vk == VK_SHIFT.0   || vk == VK_LSHIFT.0   || vk == VK_RSHIFT.0;
+        let is_alt_down   = vk == VK_MENU.0    || vk == VK_LMENU.0    || vk == VK_RMENU.0;
+
+        if is_ctrl_down {
+            return Modifier::CTRL
+        }
+
+        if is_shift_down {
+            return Modifier::SHIFT
+        }
+
+        if is_alt_down {
+            return Modifier::ALT
+        }
+
+        Modifier::empty()
+    }
+
+}
 
 
 pub(in crate::platform::windows) enum Kind {
@@ -54,11 +89,6 @@ impl LowKeyEvent {
             is_key_down,
             is_injected,
         }
-    }
-
-
-    pub fn append(&mut self, mods: Modifier) {
-        self.mods |= mods
     }
 
 

@@ -4,8 +4,8 @@ use windows::Win32::UI::Input::KeyboardAndMouse::VK_MENU;
 
 use crate::core::key::Modifier;
 use crate::platform::windows::event_loop::event::{Kind, LowKeyEvent};
-use crate::platform::windows::handler::compiler::ToWindowsInput;
 use crate::platform::windows::event_loop::shim::HookOutcome;
+use crate::platform::windows::keyboard::vk::ToWindowsInput;
 
 
 pub struct AltKeyStateMachine {
