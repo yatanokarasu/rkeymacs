@@ -1,7 +1,7 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::INPUT;
 
-use crate::core::command::handler::Compiler;
-use crate::core::plan::Plan;
+use crate::platform::handler::Compiler;
+use crate::platform::handler::plan::Plan;
 use crate::platform::windows::keyboard::input::{TapInput, ToWindowsInput};
 
 
@@ -11,7 +11,7 @@ impl Compiler for WindowsCompiler {
     type Input = INPUT;
 
     fn compile(&self, plan: Plan) -> Vec<Self::Input> {
-        use crate::core::plan::Action::*;
+        use crate::platform::handler::plan::Action::*;
 
         let mut instructions = Vec::new();
 

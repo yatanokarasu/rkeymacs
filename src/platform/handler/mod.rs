@@ -1,8 +1,11 @@
+pub(in crate::platform) mod plan;
+
+
 use std::ops::Deref;
 
 use crate::core::Disposition;
 use crate::core::command::Intent;
-use crate::core::plan::Plan;
+use crate::platform::handler::plan::Plan;
 
 
 pub trait Planner {

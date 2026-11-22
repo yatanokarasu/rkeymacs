@@ -1,6 +1,3 @@
-pub mod handler;
-
-
 use std::fmt;
 use std::str;
 

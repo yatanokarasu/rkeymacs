@@ -1,6 +1,6 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::{INPUT, SendInput};
 
-use crate::core::command::handler::Executor;
+use crate::platform::handler::Executor;
 
 
 pub struct WindowsExecutor;

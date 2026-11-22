@@ -129,12 +129,10 @@ impl KeyMaps {
 
 #[cfg(test)]
 mod tests {
-    use std::rc::Rc;
-
     use crate::core::command::Command;
-    use crate::core::config::keymap::Resolution;
     use crate::core::config::RawConfig;
     use crate::core::key::Chord;
+    use crate::core::keymap::Resolution;
 
 
     fn chord(key_spec: &str) -> Chord {
@@ -143,7 +141,7 @@ mod tests {
 
 
     fn raw_config() -> RawConfig {
-        RawConfig::parse_toml(r#"
+        RawConfig::from_toml(r#"
             [undefined]
             "C-f" = "forward-char"
 
@@ -174,8 +172,7 @@ mod tests {
     fn skip_into_keymap_when_config_is_invalid() {
         let raw_config = raw_config();
 
-        let default_keymap = RawConfig::into_default_keymap(raw_config.default);
-        let apps_keymap = RawConfig::into_apps_keymap(raw_config.section, &Rc::new(default_keymap));
+        let (_, apps_keymap) = raw_config.keymaps();
 
         assert!(apps_keymap.get("unknown_mode").is_none());
         assert!(apps_keymap.get("unknown_command").is_none());
@@ -185,7 +182,7 @@ mod tests {
     #[test]
     fn treat_override_mode_when_default_mode_is_inherit() {
         let raw_config = raw_config();
-        let default_keymap = RawConfig::into_default_keymap(raw_config.default);
+        let (default_keymap, _) = raw_config.keymaps();
 
         assert_eq!(default_keymap.resolve(&chord("C-f")), Resolution::Execute(Command::ForwardChar));
     }

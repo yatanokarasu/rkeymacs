@@ -1,8 +1,8 @@
 use crate::core::Disposition;
 use crate::core::command::Intent;
-use crate::core::command::handler::Handler;
 
 use crate::platform::Platform as IPlatform;
+use crate::platform::handler::Handler;
 use crate::platform::windows::handler::{WindowsPlanner, WindowsCompiler, WindowsExecutor};
 
 

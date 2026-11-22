@@ -119,7 +119,7 @@ impl fmt::Display for Action {
 #[cfg(test)]
 mod test {
     use crate::core::key::{Chord, Key, Modifier};
-    use crate::core::plan::{Plan, Action, PlanBuilder};
+    use crate::platform::handler::plan::{Plan, Action, PlanBuilder};
 
 
     #[test]

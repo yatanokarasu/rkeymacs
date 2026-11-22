@@ -1,3 +1,5 @@
+mod handler;
+
 use crate::core::Disposition;
 use crate::core::command::Intent;
 use crate::core::key::Chord;

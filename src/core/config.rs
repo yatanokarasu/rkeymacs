@@ -142,6 +142,23 @@ impl RawConfig {
             .expect("Unexpected state: builtin config is invalid.")
     }
 
+
+    #[cfg(test)]
+    pub(crate) fn from_toml(config_src: &str) -> Self {
+        Self::parse_toml(config_src)
+    }
+
+
+    #[cfg(test)]
+    pub(crate) fn keymaps(self) -> (Rc<KeyMap>, HashMap<String, KeyMap>) {
+        let RawConfig { default, section } = self;
+
+        let default_keymap = Rc::new(Self::into_default_keymap(default));
+        let apps_keymap = Self::into_apps_keymap(section, &default_keymap);
+
+        (default_keymap, apps_keymap)
+    }
+
 }
 
 

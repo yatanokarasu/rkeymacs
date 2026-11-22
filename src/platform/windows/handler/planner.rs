@@ -1,9 +1,9 @@
 use std::cell::Cell;
 
 use crate::core::command::Intent;
-use crate::core::command::handler::Planner;
 use crate::core::key::{Chord, Key, Modifier};
-use crate::core::plan::{Plan, PlanBuilder};
+use crate::platform::handler::Planner;
+use crate::platform::handler::plan::{Plan, PlanBuilder};
 
 
 struct MarkState {
