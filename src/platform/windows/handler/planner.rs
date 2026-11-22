@@ -106,10 +106,7 @@ impl Planner for WindowsPlanner {
 
 impl WindowsPlanner {
 
-    fn move_cursor<C: Into<Chord>>(&self, chordable: C) -> Plan
-    where
-        C: Into<C>
-    {
+    fn move_cursor<C: Into<Chord>>(&self, chordable: C) -> Plan {
         PlanBuilder::new()
             .press(chordable)
             .shifted_if(self.state.is_activated())

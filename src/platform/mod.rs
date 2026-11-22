@@ -3,24 +3,6 @@ use crate::core::command::Intent;
 use crate::core::key::Chord;
 
 
-pub struct LowLevelInstructions<T> {
-    instructions: Vec<T>,
-}
-
-impl<T> LowLevelInstructions<T> {
-
-    pub fn is_empty(&self) -> bool {
-        self.instructions.is_empty()
-    }
-
-
-    pub fn as_slice(&self) -> &[T] {
-        &self.instructions
-    }
-
-}
-
-
 pub trait Platform {
     fn execute(&self, intent: Intent) -> Disposition;
 

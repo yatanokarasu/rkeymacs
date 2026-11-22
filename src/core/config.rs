@@ -182,8 +182,9 @@ impl RawSection {
         for (key_spec_str, command_str) in self.key_config {
             let chords: VecDeque<Chord> = key_spec_str
                 .split_whitespace()
-                .map(|chord| chord.parse())
-                .collect::<Result<VecDeque<Chord>, String>>()?;
+                .map(|chord| chord.parse::<Chord>())
+                .filter_map(|result| result.ok())
+                .collect();
             let command = command_str.parse()?;
 
             let _ = bind_table.insert(chords, command);
