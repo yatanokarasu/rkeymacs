@@ -4,12 +4,11 @@ mod shim;
 mod state;
 
 
+use hook::WindowsHook;
+use shim::WindowsKeyCodeShim;
+
 use crate::core::Disposition;
 use crate::platform::EventLoop as IEventLoop;
-use crate::platform::windows::event_loop::{
-    hook::WindowsHook,
-    shim::WindowsKeyCodeShim,
-};
 
 
 pub struct EventLoop {

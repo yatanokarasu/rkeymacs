@@ -2,11 +2,12 @@ use windows::Win32::Foundation::{LPARAM, WPARAM};
 use windows::Win32::UI::Input::KeyboardAndMouse::{SendInput, INPUT, VK_SHIFT};
 use windows::Win32::UI::WindowsAndMessaging::HC_ACTION;
 
+use super::event::{LowKeyEvent, RawChord};
+use super::hook::LowLevelHookHandler;
+use super::state::AltKeyStateMachine;
+
 use crate::core::Disposition;
 use crate::core::key::{Chord, Modifier};
-use crate::platform::windows::event_loop::event::{LowKeyEvent, RawChord};
-use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
-use crate::platform::windows::event_loop::state::AltKeyStateMachine;
 use crate::platform::windows::keyboard::{CanonicalizedKey, Keyboard};
 use crate::platform::windows::keyboard::input::ToWindowsInput;
 

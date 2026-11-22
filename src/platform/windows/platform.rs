@@ -1,9 +1,10 @@
 use crate::core::Disposition;
 use crate::core::command::Intent;
 
+use super::handler::{WindowsPlanner, WindowsCompiler, WindowsExecutor};
+
 use crate::platform::Platform as IPlatform;
 use crate::platform::handler::Handler;
-use crate::platform::windows::handler::{WindowsPlanner, WindowsCompiler, WindowsExecutor};
 
 
 pub struct Platform {

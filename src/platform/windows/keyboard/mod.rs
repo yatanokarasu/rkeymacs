@@ -5,7 +5,8 @@ mod layout;
 
 use crate::core::key::Key;
 use crate::platform::windows::event_loop::event::RawChord;
-use crate::platform::windows::keyboard::layout::{JisLayout, UsLayout, VirtualKeyMapper};
+
+use layout::{JisLayout, UsLayout, VirtualKeyMapper};
 
 
 pub(in crate::platform::windows) enum CanonicalizedKey {

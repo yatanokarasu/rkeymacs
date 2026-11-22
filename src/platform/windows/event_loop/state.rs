@@ -2,9 +2,10 @@ use std::cell::RefCell;
 
 use windows::Win32::UI::Input::KeyboardAndMouse::VK_MENU;
 
+use super::event::{Kind, LowKeyEvent};
+use super::shim::HookOutcome;
+
 use crate::core::key::Modifier;
-use crate::platform::windows::event_loop::event::{Kind, LowKeyEvent};
-use crate::platform::windows::event_loop::shim::HookOutcome;
 use crate::platform::windows::keyboard::input::ToWindowsInput;
 
 

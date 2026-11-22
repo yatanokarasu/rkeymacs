@@ -5,7 +5,8 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 
 use crate::Runtime;
 use crate::core::key::{Chord, Modifier};
-use crate::platform::windows::keyboard::vk::VirtualKeyConvertable;
+
+use super::vk::VirtualKeyConvertable;
 
 
 pub(in crate::platform::windows) trait ToWindowsInput: Sized {
