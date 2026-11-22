@@ -1,6 +1,4 @@
-use std::rc::Rc;
-
-use crate::core::{Disposition, ToggleState};
+use crate::core::Disposition;
 use crate::core::command::Intent;
 use crate::core::key::Chord;
 
@@ -33,7 +31,7 @@ pub trait Platform {
 
 pub trait EventLoop {
 
-    fn install<F>(&mut self, listener: F, toggle_state: Rc<ToggleState>)
+    fn install<F>(&mut self, listener: F)
     where
         F: Fn(Chord) -> Disposition + 'static;
 

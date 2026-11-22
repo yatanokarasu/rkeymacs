@@ -1,6 +1,5 @@
 pub(in crate::core) mod keymap;
 
-
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::sync::LazyLock;
@@ -142,7 +141,7 @@ impl RawConfig {
             mode: Some("override".to_string()),
             key_config: builtin.key_config.clone()
         }.into_keymap(None)
-            .expect("Unexpected state: buildin config is invalid.")
+            .expect("Unexpected state: builtin config is invalid.")
     }
 
 }

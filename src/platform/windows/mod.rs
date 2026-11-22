@@ -1,4 +1,4 @@
-pub mod handler;
+mod handler;
 mod keyboard;
 mod event_loop;
 mod platform;

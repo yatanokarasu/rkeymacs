@@ -8,7 +8,7 @@ use crate::platform::windows::keyboard::layout::{JisLayout, UsLayout, VirtualKey
 
 
 pub(in crate::platform::windows) enum CanonicalizedKey {
-    Plane(Key),
+    Plain(Key),
     Shifted(Key),
 }
 

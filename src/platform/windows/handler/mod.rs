@@ -1,5 +1,5 @@
 mod planner;
-pub mod compiler;
+mod compiler;
 mod executor;
 
 pub(in crate::platform::windows) use planner::WindowsPlanner;

@@ -4,9 +4,7 @@ mod shim;
 mod state;
 
 
-use std::rc::Rc;
-
-use crate::core::{Disposition, ToggleState};
+use crate::core::Disposition;
 use crate::platform::EventLoop as IEventLoop;
 use crate::platform::windows::event_loop::{
     hook::WindowsHook,
@@ -28,11 +26,11 @@ impl EventLoop {
 
 impl IEventLoop for EventLoop {
 
-    fn install<F>(&mut self, listener: F, toggle_state: Rc<ToggleState>)
+    fn install<F>(&mut self, listener: F)
     where
         F: Fn(crate::core::key::Chord) -> Disposition + 'static
     {
-        let shim = WindowsKeyCodeShim::new(listener, toggle_state);
+        let shim = WindowsKeyCodeShim::new(listener);
 
         if let Err(e) = self.hook.install(Box::new(shim)) {
             println!("Failed to install WindowsHook: {e}");

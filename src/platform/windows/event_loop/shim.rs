@@ -1,10 +1,8 @@
-use std::rc::Rc;
-
 use windows::Win32::Foundation::{LPARAM, WPARAM};
 use windows::Win32::UI::Input::KeyboardAndMouse::{SendInput, INPUT, VK_SHIFT};
 use windows::Win32::UI::WindowsAndMessaging::HC_ACTION;
 
-use crate::core::{Disposition, ToggleState};
+use crate::core::Disposition;
 use crate::core::key::{Chord, Modifier};
 use crate::platform::windows::event_loop::event::{LowKeyEvent, RawChord};
 use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
@@ -25,7 +23,6 @@ pub(in crate::platform::windows::event_loop) enum HookOutcome {
 pub struct WindowsKeyCodeShim<L> {
     delegate: L,
     keyboard: Keyboard,
-    toggle_state: Rc<ToggleState>,
     alt_state: AltKeyStateMachine,
 }
 
@@ -34,18 +31,12 @@ where
     L: Fn(Chord) -> Disposition
 {
 
-    pub fn new(delegate: L, toggle_state: Rc<ToggleState>) -> Self {
+    pub fn new(delegate: L) -> Self {
         Self{
             delegate,
             keyboard: Keyboard::new(),
-            toggle_state,
             alt_state: AltKeyStateMachine::default(),
         }
-    }
-
-
-    fn is_rkeymacs_enabled(&self) -> bool {
-        self.toggle_state.current_state()
     }
 
 
@@ -57,7 +48,7 @@ where
         let mut mods = raw_chord.mods;
 
         let key = match canonicalized_key {
-            CanonicalizedKey::Plane(key) => key,
+            CanonicalizedKey::Plain(key) => key,
             CanonicalizedKey::Shifted(key) => {
                 mods.remove(Modifier::SHIFT);
                 self.inject(vec![VK_SHIFT.key_down()]);

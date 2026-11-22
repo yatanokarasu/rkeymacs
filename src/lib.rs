@@ -4,9 +4,7 @@ mod platform;
 
 use core::Engine;
 use core::config::RawConfig;
-use std::rc::Rc;
 
-use crate::core::ToggleState;
 use crate::platform::EventLoop;
 
 
@@ -27,14 +25,12 @@ impl Runtime {
         let keymaps = config.into_keymaps();
 
         let (platform, mut event_loop) = platform::new_instance();
-        let toggle_state = Rc::new(ToggleState::default());
 
         let engine = Engine::new(
             keymaps,
             platform,
-            Rc::clone(&toggle_state),
         );
-        event_loop.install(move |chord| engine.on_key(chord), toggle_state);
+        event_loop.install(move |chord| engine.on_key(chord));
         event_loop.start_loop()
     }
 

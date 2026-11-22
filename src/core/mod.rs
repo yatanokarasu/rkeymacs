@@ -5,7 +5,6 @@ pub(crate) mod config;
 
 
 use std::cell::{Cell, RefCell};
-use std::rc::Rc;
 
 use crate::core::command::{Command, Intent};
 use crate::core::config::keymap::{KeyMaps, Resolution};
@@ -25,12 +24,12 @@ pub(crate) struct ToggleState {
 
 impl ToggleState {
 
-    pub fn current_state(&self) -> bool {
+    pub fn is_enabled(&self) -> bool {
         self.enabled_rkeymacs.get()
     }
 
 
-    fn switch_toggle(&self) {
+    fn toggle(&self) {
         self.enabled_rkeymacs.set(!self.enabled_rkeymacs.get())
     }
 
@@ -48,16 +47,16 @@ impl Default for ToggleState {
 pub(crate) struct Engine<P: Platform> {
     keymaps: RefCell<KeyMaps>,
     platform: P,
-    toggle_state: Rc<ToggleState>,
+    toggle_state: ToggleState,
 }
 
 impl<P: Platform> Engine<P> {
 
-    pub fn new(keymaps: KeyMaps, platform: P, toggle_state: Rc<ToggleState>) -> Self {
+    pub fn new(keymaps: KeyMaps, platform: P) -> Self {
         Self {
             keymaps: RefCell::new(keymaps),
             platform,
-            toggle_state,
+            toggle_state: ToggleState::default(),
         }
     }
 
@@ -66,7 +65,7 @@ impl<P: Platform> Engine<P> {
         println!("Engine::execute(chord = {})", chord);
 
         match self.resolve(&chord) {
-            Resolution::Execute(command) => self.execute(Intent{ command, chord }),
+            Resolution::Execute(command) => self.execute(command, chord),
             Resolution::Nop => {
                 println!("No binding");
                 Disposition::Passthrough
@@ -86,15 +85,17 @@ impl<P: Platform> Engine<P> {
     }
 
 
-    fn execute(&self, intent: Intent) -> Disposition {
-        println!("Bind to {}", intent.command);
+    fn execute(&self, command: Command, chord: Chord) -> Disposition {
+        println!("Bind to {}", command);
 
-        match intent.command {
+        match command {
             Command::ToggleRkeymacs => {
-                self.toggle_state.switch_toggle();
+                self.toggle_state.toggle();
+
                 return Disposition::Swallow
             },
-            _ => self.platform.execute(intent)
+            _ if !self.toggle_state.is_enabled() => Disposition::Passthrough,
+            _ => self.platform.execute(Intent { command, chord }),
         }
     }
 

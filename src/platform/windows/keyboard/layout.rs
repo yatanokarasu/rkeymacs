@@ -45,7 +45,7 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
             return None
         }
 
-        Some(CanonicalizedKey::Plane(Key::Char((vk as u8).to_ascii_lowercase() as char)))
+        Some(CanonicalizedKey::Plain(Key::Char((vk as u8).to_ascii_lowercase() as char)))
     }
 
 
@@ -64,7 +64,7 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
             _ => return None,
         };
 
-        Some(CanonicalizedKey::Plane(key))
+        Some(CanonicalizedKey::Plain(key))
     }
 
 
@@ -83,9 +83,9 @@ pub(in crate::platform::windows) trait VirtualKeyMapper {
 
         use CanonicalizedKey::*;
         let canonicalized_key = match vk {
-            _ if vk == VK_OEM_COMMA.0   => if is_shifted { Shifted(Key::Char('<')) } else { Plane(Key::Char(',')) },
-            _ if vk == VK_OEM_PERIOD.0  => if is_shifted { Shifted(Key::Char('>')) } else { Plane(Key::Char('.')) },
-            _ if vk == VK_OEM_2.0       => if is_shifted { Shifted(Key::Char('?')) } else { Plane(Key::Char('/')) },
+            _ if vk == VK_OEM_COMMA.0   => if is_shifted { Shifted(Key::Char('<')) } else { Plain(Key::Char(',')) },
+            _ if vk == VK_OEM_PERIOD.0  => if is_shifted { Shifted(Key::Char('>')) } else { Plain(Key::Char('.')) },
+            _ if vk == VK_OEM_2.0       => if is_shifted { Shifted(Key::Char('?')) } else { Plain(Key::Char('/')) },
 
             _ => return None,
         };
@@ -130,7 +130,7 @@ impl VirtualKeyMapper for JisLayout {
 
             CanonicalizedKey::Shifted(key)
         } else {
-            CanonicalizedKey::Plane(Key::Char(vk as u8 as char))
+            CanonicalizedKey::Plain(Key::Char(vk as u8 as char))
         };
 
         Some(canonicalized_key)
