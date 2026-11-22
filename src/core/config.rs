@@ -1,5 +1,3 @@
-pub(in crate::core) mod keymap;
-
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::sync::LazyLock;
@@ -9,7 +7,7 @@ use serde::Deserialize;
 
 use crate::Runtime;
 use crate::core::key::Chord;
-use crate::core::config::keymap::{BindTable, KeyMap, KeyMaps};
+use crate::core::keymap::{BindTable, KeyMap, KeyMaps};
 
 
 const BUILTIN_CONFIG_STR: &str = include_str!(

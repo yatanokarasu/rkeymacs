@@ -2,7 +2,7 @@ mod core;
 mod platform;
 
 
-use core::Engine;
+use core::engine::Engine;
 use core::config::RawConfig;
 
 use crate::platform::EventLoop;

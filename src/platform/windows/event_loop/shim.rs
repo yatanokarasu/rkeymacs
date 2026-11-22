@@ -8,7 +8,7 @@ use crate::platform::windows::event_loop::event::{LowKeyEvent, RawChord};
 use crate::platform::windows::event_loop::hook::LowLevelHookHandler;
 use crate::platform::windows::event_loop::state::AltKeyStateMachine;
 use crate::platform::windows::keyboard::{CanonicalizedKey, Keyboard};
-use crate::platform::windows::keyboard::vk::ToWindowsInput;
+use crate::platform::windows::keyboard::input::ToWindowsInput;
 
 
 pub(in crate::platform::windows::event_loop) enum HookOutcome {

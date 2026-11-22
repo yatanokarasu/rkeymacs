@@ -3,7 +3,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::INPUT;
 use crate::core::command::handler::Compiler;
 use crate::core::plan::Plan;
 use crate::platform::LowLevelInstructions;
-use crate::platform::windows::keyboard::vk::{TapInput, ToWindowsInput};
+use crate::platform::windows::keyboard::input::{TapInput, ToWindowsInput};
 
 
 pub struct WindowsCompiler;

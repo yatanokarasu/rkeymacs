@@ -1,4 +1,5 @@
 pub(in crate::platform::windows) mod vk;
+pub(in crate::platform::windows) mod input;
 mod layout;
 
 
